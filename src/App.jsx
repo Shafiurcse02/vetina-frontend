@@ -46,7 +46,7 @@ const App = () => {
               }
             />
             <Route
-              path="/profile"
+              path="/my-profile"
               element={
                 <PrivateRoute>
                   <Profile />

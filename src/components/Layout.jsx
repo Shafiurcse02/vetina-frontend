@@ -17,7 +17,7 @@ const Layout = () => {
           }}
         />
         <Navbar />
-        <main className="flex-1 p-6 bg-white  md:mx-[10%]">
+        <main className="flex-1 bg-white ">
           <Outlet />
         </main>
         <footer className="p-4 text-center text-white bg-gray-800">

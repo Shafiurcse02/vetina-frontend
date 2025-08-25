@@ -3,11 +3,15 @@ import { Menu, X } from "lucide-react"; // icon
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { IoMdArrowDropdown } from "react-icons/io";
+
 import { logout } from "../features/auth/authAPI";
 import { images } from "../assets/assets";
+import { div } from "framer-motion/client";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false); // মোবাইলে toggle করার জন্য
+  const [token, setToken] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth); // User state from redux store
@@ -105,13 +109,42 @@ const Navbar = () => {
           )}
         </ul>
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            className="bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block"
-            onClick={() => navigate("/login")}
-          >
-            Create Account
-          </button>
+          {token ? (
+            <div className="flex items-center gap-2 cursor-pointer group relative">
+              <img src={images.doc4} alt="" className="w-8 rounded-full" />
+              <IoMdArrowDropdown className="w-5" />
+              <div className="absolute top-0 right-0 pt-10 mt-2 text-base font-medium text-gray-600 z-20 hidden group-hover:block">
+                <div className="min-w-48 bg-white rounded-lg shadow-md flex flex-col gap-3 p-4 border">
+                  <p
+                    onClick={() => navigate("my-profile")}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    My Profile
+                  </p>
+                  <p
+                    onClick={() => navigate("my-appointment")}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    My Appointment
+                  </p>
+                  <p
+                    onClick={() => setToken(false)}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    Logout
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block"
+              onClick={() => navigate("/login")}
+            >
+              Create Account
+            </button>
+          )}
         </div>
       </div>
 

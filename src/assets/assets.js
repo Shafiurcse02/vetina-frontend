@@ -6,8 +6,12 @@ import doc5 from "./doc5.png";
 import doc6 from "./doc6.jpg";
 import doc7 from "./doc7.jpg";
 import logo from "./logo.jpg";
+import groupImage from "./groups.png"
+import gs from "./doctorg.png"
 
-export const images = { doc1, doc2, doc3, doc4, doc5, doc6, doc7,logo };
+import grouppictures from "./group.png"
+
+export const images = { doc1, doc2, doc3, doc4, doc5, doc6, doc7,logo,groupImage,grouppictures,gs };
 
 export const vetSpecialities = [
   { id: 1, name: "Small Animal Care", image: doc1 },
