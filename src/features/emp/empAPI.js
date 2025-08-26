@@ -1,15 +1,17 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "../../utils/axiosInstance";
 
-export const register = createAsyncThunk("emp/registerUser",
-    async (data, { rejectWithValue }) => {
+export const fetchCurrentUser = createAsyncThunk(
+    'auth/fetchCurrentUser',
+    async (_, { rejectWithValue }) => {
         try {
-            const res = await axiosInstance.post("/register", data);
-            return res.data;
+            const response = await axiosInstance.get("/profile");
+            return response.data; // user info if logged in
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Login ব্যর্থ হয়েছে');
+            return rejectWithValue('Failed to fetch user');
         }
-    });
+    }
+);
 
 export const fetchProfile = createAsyncThunk(
     'emp/fetchProfile',

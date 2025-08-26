@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8085/sr', // আপনার API URL
+    baseURL: 'http://localhost:8080', // আপনার API URL
     headers: {
         'Content-Type': 'application/json',
     },
@@ -9,3 +9,4 @@ const axiosInstance = axios.create({
 });
 
 export default axiosInstance;
+

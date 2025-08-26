@@ -3,40 +3,41 @@ import { useDispatch } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import PrivateRoute from "./components/PrivateRoute.jsx";
-import { fetchCurrentUser } from "./features/auth/authAPI";
 import About from "./pages/About.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import LogoutPage from "./pages/LogoutPage.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import Profile from "./pages/MyProfile.jsx";
-import Registration from "./pages/Registration.jsx";
 import Doctors from "./pages/Doctors.jsx";
 import Contact from "./pages/Contact.jsx";
 import MyAppointment from "./pages/MyAppointment.jsx";
 import Appointment from "./pages/Appointment.jsx";
+import Registration from "./pages/Registration.jsx";
+
 const App = () => {
   const dispatch = useDispatch();
 
-  useEffect(() => {
+/*   useEffect(() => {
     dispatch(fetchCurrentUser());
-  }, [dispatch]);
+  }, [dispatch]); */
 
   return (
     <div className="mx-4 sm:mx-[10%]">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
+            {/* Public Routes */}
             <Route index element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/doctors/:speciality" element={<Doctors />} />
-            <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
+<Route path="/reg" element={<Registration />} />
+            Registration
             <Route path="/contact" element={<Contact />} />
-            <Route path="/my-appointment" element={<MyAppointment />} />
-            <Route path="/appointment/:docId" element={<Appointment />} />
 
+            {/* Protected Routes */}
             <Route
               path="/logout"
               element={
@@ -53,7 +54,24 @@ const App = () => {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/my-appointment"
+              element={
+                <PrivateRoute>
+                  <MyAppointment />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/appointment/:docId"
+              element={
+                <PrivateRoute>
+                  <Appointment />
+                </PrivateRoute>
+              }
+            />
 
+            {/* Not Found */}
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

@@ -4,7 +4,7 @@ export const LoginUser = createAsyncThunk(
     "auth/loginUser",
     async (credentials, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.post("/login", credentials);
+            const response = await axiosInstance.post("/auth/login", credentials);
             return response.data;
         } catch (error) {
             if (error.response && error.response.data && error.response.data.message) {
@@ -17,18 +17,16 @@ export const LoginUser = createAsyncThunk(
         }
 
     });
-
-export const fetchCurrentUser = createAsyncThunk(
-    'auth/fetchCurrentUser',
-    async (_, { rejectWithValue }) => {
+export const registerUser = createAsyncThunk("emp/registerUser",
+    async (data, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get("/profile");
-            return response.data; // user info if logged in
+            const res = await axiosInstance.post("/auth/register", data);
+            return res.data;
         } catch (error) {
-            return rejectWithValue('Failed to fetch user');
+            return rejectWithValue(error.response?.data?.message || 'Login ব্যর্থ হয়েছে');
         }
-    }
-);
+    });
+
 export const logout = createAsyncThunk(
     'auth/logout',
     async (_, { rejectWithValue }) => {
