@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchCurrentUser, fetchProfile } from "./empAPI";
+
 const initialState = {
-  users: null,
+  user: null,
   loading: false,
   error: null,
 };
@@ -9,9 +10,15 @@ const initialState = {
 const empSlice = createSlice({
   name: "emp",
   initialState,
-  reducers: {},
+  reducers: {
+    clearUser: (state) => {
+      state.user = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // fetchCurrentUser
       .addCase(fetchCurrentUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -24,21 +31,26 @@ const empSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Login failed";
       })
+
+      // fetchProfile
       .addCase(fetchProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload;
+        state.user = action.payload;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        if (action.payload === "Unauthorized") {
-          state.users = null;
-        }
-      });
+        state.user = null;
+      })
+
+     
   },
 });
+
+export const { clearUser } = empSlice.actions;
 export default empSlice.reducer;
+ export const selectCurrentUser = (state) => state.emp.user;

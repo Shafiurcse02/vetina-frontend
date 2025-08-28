@@ -5,6 +5,7 @@ import leaveReducer from '../features/leave/leaveSlice';
 import leaveTypeReducer from '../features/leaveType/leaveTypeSlice';
 import doctorsReducer from '../features/doctors/DoctorsSlice';
 import userReducer from '../features/emp/empSlice';
+import  toggleLoginReducer  from '../features/auth/toggleLoginSlice';
 
 const store = configureStore({
     reducer: {
@@ -12,7 +13,8 @@ const store = configureStore({
         leaveType: leaveTypeReducer,
         leave: leaveReducer,
         doctors: doctorsReducer,
-        user:userReducer
+        userR:userReducer,
+        toggleLogin: toggleLoginReducer,
     },
 });
 

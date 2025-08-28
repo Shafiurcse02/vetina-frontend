@@ -1,27 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoginUser, registerUser } from "../features/auth/authAPI";
+import { useNavigate } from "react-router-dom";
+import { setToken } from "../features/auth/authSlice";
+import { toggleLoginForm } from "../features/auth/toggleLoginSlice";
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(false);
+ const isLogin = useSelector((state) => state.toggleLogin.isLoginForm);
   const [step, setStep] = useState(1);
   const [profilePreview, setProfilePreview] = useState(null);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-    trigger,
-    reset,
-  } = useForm();
+  const { register, handleSubmit, watch, formState: { errors }, trigger, reset } = useForm();
+
 
   const toggleForm = () => {
-    setIsLogin(!isLogin);
+    dispatch(toggleLoginForm());
     reset();
     setStep(1);
     setProfilePreview(null);
@@ -42,50 +41,47 @@ const Login = () => {
   const prevStep = () => setStep(step - 1);
 
   const onLoginSubmit = async (data) => {
-  const filteredData = {
-    userName: data.userName,
-    password: data.password,
-  };
+    const filteredData = {
+      userName: data.userName,
+      password: data.password,
+    };
+    console.log(isAuthenticated);
 
-  try {
-    const resultAction = await dispatch(LoginUser(filteredData));
-    if (LoginUser.fulfilled.match(resultAction)) {
-      console.log("Login Success:", resultAction.payload);
-      toast.success("Logged in successfully!");
-    } else {
-      toast.error(resultAction.payload || "Login failed!");
+    try {
+      const resultAction = await dispatch(LoginUser(filteredData)); // await added
+      if (LoginUser.fulfilled.match(resultAction)) {
+        dispatch(setToken(true));
+        toast.success("Logged in successfully!");
+        navigate("/my-profile");
+      } else {
+        toast.error(resultAction.payload || "Login failed!");
+      }
+    } catch (err) {
+      toast.error("Login Error");
     }
-  } catch (err) {
-    console.error(err);
-    toast.error("Login Error");
-  }
 
-  reset();
-};
-
+    reset();
+  };
 
   const onRegisterSubmit = (data) => {
+    // শুধু দরকারি fields select করা
+    const filteredData = {
+      userName: data.userName,
+      email: data.email,
+      phone: data.phone,
+      gender: data.gender,
+      password: data.password,
+    };
 
-     // শুধু দরকারি fields select করা
-  const filteredData = {
-    userName: data.userName,
-    email: data.email,
-    phone: data.phone,
-    gender: data.gender,
-    password: data.password
-  };
+    // profilePic আলাদা handling করতে হবে যদি upload করতে চান
+    if (data.profilePic && data.profilePic.length > 0) {
+      // filteredData.profilePic = data.profilePic[0]; // single file
+    }
 
-  // profilePic আলাদা handling করতে হবে যদি upload করতে চান
-  if (data.profilePic && data.profilePic.length > 0) {
-   // filteredData.profilePic = data.profilePic[0]; // single file
-  }
+    console.log("Filtered Data:", filteredData);
 
-  console.log("Filtered Data:", filteredData);
+    const dt = dispatch(registerUser(filteredData));
 
-
-    const dt= dispatch(registerUser(filteredData));
-    console.log(dt);
-    
     console.log("Register Data:", dt);
     toast.success("Registration successful!");
 
@@ -137,17 +133,18 @@ const Login = () => {
               </div>
               <div>
                 <label className="block mb-1 font-medium">userName</label>
-               <input
-  type="text"
-  {...register("userName", {
-    required: "userName required",
-    pattern: {
-      value: /^[a-zA-Z0-9_-]{2,15}$/,
-      message: "Invalid userName (2-15 chars, letters/numbers/_/-)",
-    },
-  })}
-  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-/>
+                <input
+                  type="text"
+                  {...register("userName", {
+                    required: "userName required",
+                    pattern: {
+                      value: /^[a-zA-Z0-9_-]{2,15}$/,
+                      message:
+                        "Invalid userName (2-15 chars, letters/numbers/_/-)",
+                    },
+                  })}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
                 {errors.userName && (
                   <p className="text-red-500 text-sm mt-1">
                     {errors.userName.message}
@@ -346,24 +343,25 @@ const Login = () => {
                     <input
                       type="file"
                       accept="image/*"
-                     {...register("profilePic", {
-  validate: {
-    fileSize: (value) => {
-      if (!value || value.length === 0) return true;
-      return (
-        value[0].size <= 2 * 1024 * 1024 || "Max file size is 2MB"
-      );
-    },
-    fileType: (value) => {
-      if (!value || value.length === 0) return true;
-      return (
-        ["image/jpeg", "image/png", "image/gif"].includes(value[0].type) ||
-        "Only JPG, PNG, GIF allowed"
-      );
-    },
-  },
-})}
-
+                      {...register("profilePic", {
+                        validate: {
+                          fileSize: (value) => {
+                            if (!value || value.length === 0) return true;
+                            return (
+                              value[0].size <= 2 * 1024 * 1024 ||
+                              "Max file size is 2MB"
+                            );
+                          },
+                          fileType: (value) => {
+                            if (!value || value.length === 0) return true;
+                            return (
+                              ["image/jpeg", "image/png", "image/gif"].includes(
+                                value[0].type
+                              ) || "Only JPG, PNG, GIF allowed"
+                            );
+                          },
+                        },
+                      })}
                       onChange={(e) => {
                         if (e.target.files && e.target.files[0]) {
                           const file = e.target.files[0];

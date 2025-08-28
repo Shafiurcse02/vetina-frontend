@@ -49,9 +49,7 @@ const App = () => {
             <Route
               path="/my-profile"
               element={
-                <PrivateRoute>
                   <Profile />
-                </PrivateRoute>
               }
             />
             <Route

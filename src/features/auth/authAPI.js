@@ -23,15 +23,22 @@ export const registerUser = createAsyncThunk("emp/registerUser",
             const res = await axiosInstance.post("/auth/register", data);
             return res.data;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Login ব্যর্থ হয়েছে');
+               if (error.response && error.response.data && error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            }
+            if (error.message === "Network Error") {
+                return rejectWithValue("সার্ভারে সংযোগ করা যাচ্ছে না।");
+            }
+            return rejectWithValue("Registration ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
+        
         }
     });
 
-export const logout = createAsyncThunk(
-    'auth/logout',
+    export const logout = createAsyncThunk(
+    'emp/logout',
     async (_, { rejectWithValue }) => {
         try {
-            await axiosInstance.post('/logout');
+            await axiosInstance.post('/auth/logout');
         } catch (err) {
             return rejectWithValue('logout করতে সমস্যা হয়েছে');
         }

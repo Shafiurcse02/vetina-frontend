@@ -1,41 +1,87 @@
-import { useState } from "react";
+import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import Modal from "../components/Modal";
-export default function MyProfile() {
+import { fetchProfile } from "../features/emp/empAPI";
+
+const MyProfile = () => { 
   const dispatch = useDispatch();
-  const { loading, error, user } = useSelector((state) => state.auth);
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
-  if (!user) {
-    navigate("/login");
+  const { user, loading, error } = useSelector((state) => state.userR);
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-xl font-bold text-gray-600">
+        Loading Profile...
+      </div>
+    );
   }
 
-  const sampleProfile = user || {
-    name: "মো. আরিফ হোসেন",
-    email: "arif@example.com",
-    phone: "০১৭১২৩৪৫৬৭৮",
-    address: "ঢাকা, বাংলাদেশ",
-    experience: "৫",
-  };
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-red-600 font-bold text-xl">
+        {error}
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center p-10 bg-gray-100">
-      {user && <h2>{user.email}</h2>}
-      <h1>{user != null ? user.email : "No data"}</h1>
-
-      <button
-        onClick={() => setShowModal(true)}
-        className="px-8 py-4 text-xl font-bold text-white transition bg-purple-600 rounded-xl hover:bg-purple-700"
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-600 via-pink-500 to-red-500">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-lg"
       >
-        প্রোফাইল দেখুন
-      </button>
+        <div className="flex flex-col items-center">
+          {/* Avatar */}
+          <motion.img
+            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.userName}`}
+            alt="avatar"
+            className="w-32 h-32 rounded-full border-4 border-purple-600 shadow-lg"
+            initial={{ y: -30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          />
 
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        profile={sampleProfile}
-      />
+          {/* Name + Role */}
+          <h1 className="mt-4 text-3xl font-bold text-gray-800">
+            {user.userName}
+          </h1>
+          <p className="text-purple-600 font-semibold">{user.role}</p>
+        </div>
+
+        {/* Details */}
+        <motion.div
+          className="mt-6 grid grid-cols-1 gap-4 text-gray-700"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="p-4 bg-gray-100 rounded-xl shadow-sm">
+            <span className="font-semibold">📧 Email: </span>
+            {user.email}
+          </div>
+          <div className="p-4 bg-gray-100 rounded-xl shadow-sm">
+            <span className="font-semibold">📱 Phone: </span>
+            {user.phone}
+          </div>
+          <div className="p-4 bg-gray-100 rounded-xl shadow-sm">
+            <span className="font-semibold">⚧ Gender: </span>
+            {user.gender}
+          </div>
+          <div className="p-4 bg-gray-100 rounded-xl shadow-sm">
+            <span className="font-semibold">✅ Active: </span>
+            {user.active ? "Yes" : "No"}
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
+
+export default MyProfile;
