@@ -13,3 +13,4 @@ If you are developing a production application, we recommend using TypeScript wi
 # vet-frontend
 # vetina
 # vetina-frontend
+# vetina-frontend
